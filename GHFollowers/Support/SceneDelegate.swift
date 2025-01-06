@@ -18,8 +18,8 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         guard let windowScene = (scene as? UIWindowScene) else { return }
         
         //(2 этап) - после создания SearchVC и FavoritesListVC нам нужно создать Navigation Controllers для них. rootViewControllers выступают сами SearchVC и FavoritesListVC
-        let searchNC = UINavigationController(rootViewController: SearchVC())
-        let favoritesNC = UINavigationController(rootViewController: FavoritesListVC())
+//        let searchNC = UINavigationController(rootViewController: SearchVC())
+//        let favoritesNC = UINavigationController(rootViewController: FavoritesListVC())
         
         //(3 этап) - теперь создаем tabbar (UITabBarController()), tabbar содержить array (массив) viewControllers, поэтому добавляем туда наши Navigation VC
 //        let tabbar = UITabBarController()
@@ -35,6 +35,7 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         window?.rootViewController = createTabbar() //изначально здесь можно было указать просто UITabBarController() до момента, пока не создали tabbar
         // теперь делаем наш window KeyAndVisible
         window?.makeKeyAndVisible()
+        configureNavigationBar()
     }
     
     //(4 этап) - перенесли в функции создание UINavigationControllers, плюс там сразу добавили значки и заголовки для tabBar
@@ -91,6 +92,11 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         // Called as the scene transitions from the foreground to the background.
         // Use this method to save data, release shared resources, and store enough scene-specific state information
         // to restore the scene back to its current state.
+    }
+    
+    //делаем кнопку back в navigation bar зеленой
+    func configureNavigationBar() {
+        UINavigationBar.appearance().tintColor = .systemGreen
     }
 
 
