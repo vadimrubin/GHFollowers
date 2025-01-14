@@ -108,6 +108,10 @@ class FollowersListVC: UIViewController {
         navigationItem.searchController = searchController
     }
     
+    func test() {
+        print("test")
+    }
+    
     
     
     func getFollowers(username: String, page: Int) {
