@@ -7,6 +7,11 @@
 
 import UIKit
 
+//протокол для коммуникации между FollowersListVC и UserInfoVC
+protocol FollowersListVCDelegate {
+    func didRequestFollowers(for username: String) //действие - показать FollowersListVC по новому user
+}
+
 class FollowersListVC: UIViewController {
     
     //создаем секции для Collection View. У нас только одна секция, поэтому один кейс main
@@ -36,12 +41,47 @@ class FollowersListVC: UIViewController {
         configureDataSource()
     }
     
+    //конфиг VC
     func configureViewController() {
         view.backgroundColor = .systemBackground
         //хотим показывать navigation bar c title (title установили на пред VC при переходе)
         navigationController?.isNavigationBarHidden = false
         navigationController?.navigationBar.prefersLargeTitles = true
+        
+        //добавляем кнопку + на место rightBarButtonItem
+        let addButton = UIBarButtonItem(barButtonSystemItem: .add, target: self, action: #selector(addButtonTapped))
+        //ставим кнопку Done на место rightBarButtonItem
+        navigationItem.rightBarButtonItem = addButton
+    }
     
+    //действие кнопки rightBarButtonItem
+    @objc func addButtonTapped() {
+        showLoadingView() //так как будем запускать NetworkManager, то нужно показать LoadingView, пока ждем результат
+        
+        NetworkManager.shared.getUserInfo(for: username) { [weak self] result in //хотим получить инфо по конкретному юзеру
+            guard let self = self else { return }
+            self.dismissLoadingView() //перестаем показывать LoadingView, так как уже есть результат
+            
+            switch result {
+                
+            case .success(let user): //кейс успешный и у нас есть объект user
+                let favoriteUser = Follower(login: user.login, avatarUrl: user.avatarUrl) //создаем объект Follower с данными user
+                //запускаем PersistanceManager с объектом favoriteUser и хотим сохранить (.add) его в UseDefaults
+                PersistanceManager.updateWith(follower: favoriteUser, actionType: .add) { [weak self] error in
+                    guard let self = self else { return } //штука нужная т.к. выше [weak self]
+                    //error is optional, поэтому нужно баиндить
+                    guard let error = error else {
+                        //если нет ошибки, то показываем успешный Алерт
+                        self.presentGFAlertOnMainThread(title: "Success!", message: "You've succesfully favorited this user", buttonTitle: "Good!")
+                        return //и выходим из функции
+                    }
+                    self.presentGFAlertOnMainThread(title: "Something went wrong", message: error.rawValue, buttonTitle: "Ok") //если есть ошибка, то показываем Alert с этой ошибкой
+                    
+                }
+            case .failure(let error): //если кейс неудачный, то тоже показываем Алерт с ошибкой
+                self.presentGFAlertOnMainThread(title: "Something went wrong", message: error.rawValue, buttonTitle: "Ok")
+            }
+        }
     }
     
     func configureCollectionView() {
@@ -168,6 +208,7 @@ extension FollowersListVC: UICollectionViewDelegate {
         let follower = activeArray[indexPath.item]
         
         let destVC = UserInfoVC()
+        destVC.delegate = self //устанавливаем delegate для destVC, это означает, что FollowersListVC сидит и слушает, когда будет нажата кнопка на destVC (UserInfoVC)
         destVC.userName = follower.login
         let navController = UINavigationController(rootViewController: destVC)
         present(navController, animated: true)
@@ -193,4 +234,19 @@ extension FollowersListVC: UISearchResultsUpdating, UISearchBarDelegate {
         isSearching = false
         updateData(on: followersArray)
     }
+}
+
+// действие протокола FollowersListVCDelegate
+extension FollowersListVC: FollowersListVCDelegate {
+    func didRequestFollowers(for username: String) {
+        self.username = username //новый username, который мы получаем из UserInfoVC
+        title = username //новый title, который равен новому username
+        page = 1 //начинаем с первой страницы
+        followersArray.removeAll() //удаляем объекты из arrays
+        filteredFollowers.removeAll() //удаляем объекты из arrays
+        collectionView.setContentOffset(.zero, animated: true) //сдвигаем collection view в начало
+        getFollowers(username: username, page: page) //запускаем метод getFollowers для юзера из UserInvoVC
+    }
+    
+    
 }

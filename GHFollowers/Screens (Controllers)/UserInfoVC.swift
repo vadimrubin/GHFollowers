@@ -7,13 +7,13 @@
 
 import UIKit
 
+//протокол коммуникаций между UserInfoVC - GFRepoItemVC/FollowersItemVC
 protocol UserInfoVCDelegate {
-    func didTapGitHubProfile(for user: User)
-    func didTapGetFollowers(for user: User)
+    func didTapGitHubProfile(for user: User) //действие при нажатии кнопки "GitHub Profile". Открываем SafariView и показываем профиль по ссылке
+    func didTapGetFollowers(for user: User)  //действие при нажатии кнопки "Get Followers". Переходим на FollowersListVC и показываем новый список followers по user
 }
 
-class UserInfoVC: UIViewController /*,showSafariViewDelegate */ {
-    
+class UserInfoVC: UIViewController {
 
     let headerView = UIView()
     let itemViewOne = UIView()
@@ -24,6 +24,8 @@ class UserInfoVC: UIViewController /*,showSafariViewDelegate */ {
     var userName: String!
     
     var nextUser: String?
+    
+    var delegate: FollowersListVCDelegate!
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -123,17 +125,30 @@ class UserInfoVC: UIViewController /*,showSafariViewDelegate */ {
 
 }
 
+//действия протокола коммуникаций между UserInfoVC - GFRepoItemVC/FollowersItemVC
 extension UserInfoVC: UserInfoVCDelegate {
+    //действие, которое просит запустить GFRepoItemVC, при нажатии на кнопку
     func didTapGitHubProfile(for user: User) {
+        //проверяем url
         guard let url = URL(string: user.htmlUrl) else {
+            //если url не получился, то показываем Alert
             presentGFAlertOnMainThread(title: "Invalid URL", message: "The URL attached to the user is invalid", buttonTitle: "Ok")
-            return
+            return // выходим из метода
         }
-        presentSafariVC(with: url)
+        presentSafariVC(with: url) //показываем SafariView с успешным url
     }
     
+    //действие, которое просит запустить GFFollowerItemVC, при нажатии на кнопку
     func didTapGetFollowers(for user: User) {
-        //
+        //проверяем есть ли followers у юзера
+        guard user.followers != 0 else {
+            //если user.followers = 0, то показываем Alert
+            presentGFAlertOnMainThread(title: "No followers", message: "This user has no followers", buttonTitle: "Ok")
+            return //return здесь означает, что мы выходим из всей функции didTapGetFollowers и не переходим к delegate.didRequestFollowers(for: user.login)
+        }
+        //если user.followers != 0, то выполняем следующий код
+        delegate.didRequestFollowers(for: user.login) //FollowersListVCDelegate - сообщаем FollowersListVC, что хотим выполнить func didRequestFollowers
+        dismissVC() //скрываем текущий VC
     }
 
 }

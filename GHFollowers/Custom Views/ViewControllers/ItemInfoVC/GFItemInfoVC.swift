@@ -18,7 +18,7 @@ class GFItemInfoVC: UIViewController {
     
     var user: User!
     //delegatee - для связи между ChildVCs - GFRepoItemVC&GFFollowerItemVC c UserInfoVC
-    var delegatee: UserInfoVCDelegate!
+    var delegatee: UserInfoVCDelegate! //мб нужно добавить weak к var delegatee, так было в курсе, но появляется ошибка
     
     //создаем кастомный init для GFItemsInfoVC
     init(user: User!) {

@@ -73,7 +73,7 @@ class NetworkManager {
             //если у нас есть data, то используем do-catch блок
             do {
                 //JSONDecoder() - это объект, который преобразует data в наши объекты
-                //JSONDecoder() - работает наоборот, преобразует наши объекты в data
+                //JSONEncoder() - работает наоборот, преобразует наши объекты в data
                 let decoder = JSONDecoder()
                 //используем keyDecodingStrategy, которая конвертит url from snake_Case to camelCase
                 decoder.keyDecodingStrategy = .convertFromSnakeCase

@@ -30,6 +30,7 @@ class GFFollowerItemVC: GFItemInfoVC {
         actionButton.set(backgroundColor: .systemGreen, title: "Get Followers")
     }
     
+    //переписываем действие кнопки. Когда кнопка нажата, то GFFollowerItemVC сообщает delegatee (он объявлен в родительском классе), что кнопка нажата и можно выполнять действие didTapGetFollowers
     override func actionButtonTapped() {
         delegatee.didTapGetFollowers(for: user)
     }
@@ -39,10 +40,10 @@ class GFFollowerItemVC: GFItemInfoVC {
 //        actionButton.addTarget(self, action: #selector(showFollowersList), for: .touchUpInside)
 //
 //    }
-    
-    //мой Протокол
+
 //    @objc func showFollowersList() {
 //        print("кнопку нажали")
 //        delegate?.showFollowersListVC()
 //    }
+
 }
