@@ -106,8 +106,6 @@ class SearchVC: UIViewController {
         followerListVC.title = usernameTextField.text
         //показываем следующий VC
         navigationController?.pushViewController(followerListVC, animated: true)
-        
-        
     }
     
     //функция для того чтобы убирать клавиатуру при тапе в любом месте на экране

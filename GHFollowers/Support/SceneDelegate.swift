@@ -32,38 +32,38 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         //у window должен быть самый основной View Conroller, соответственно мы говорим, что rootViewController - это ViewController() (самый первый View Conroller, который создается автоматически при создании приложения). rootViewController можно будет поменять в дальнейшем на какой-то другой, но для начального запуска нужно сделать так.
         //window?.rootViewController = ViewController()
         //поменяли ViewController() на UITabBarController()
-        window?.rootViewController = createTabbar() //изначально здесь можно было указать просто UITabBarController() до момента, пока не создали tabbar
+        window?.rootViewController = GFTabBarController()//изначально здесь можно было указать просто UITabBarController() до момента, пока не создали tabbar (2) а теперь пересоздали это в отдельном файле GFTabBarController
         // теперь делаем наш window KeyAndVisible
         window?.makeKeyAndVisible()
         configureNavigationBar()
     }
     
-    //(4 этап) - перенесли в функции создание UINavigationControllers, плюс там сразу добавили значки и заголовки для tabBar
-    func createSearchNC() -> UINavigationController {
-        let searchVC = SearchVC()
-        searchVC.title = "Search"
-        searchVC.tabBarItem = UITabBarItem(tabBarSystemItem: .search, tag: 0)
-        
-        return UINavigationController(rootViewController: searchVC)
-    }
-    
-    func createFavoritesNC() -> UINavigationController {
-        let favoritesListVC = FavoritesListVC()
-        favoritesListVC.title = "Favorites"
-        favoritesListVC.tabBarItem = UITabBarItem(tabBarSystemItem: .favorites, tag: 1)
-        
-        return UINavigationController(rootViewController: favoritesListVC)
-    }
-    
-    //(5) - создадим функцию, которая создаст UITabBarController(), внутри которого наши Navigation Controllers
-    func createTabbar() -> UITabBarController {
-        let tabbar = UITabBarController()
-        UITabBar.appearance().tintColor = .systemGreen
-        //в массив viewControllers можно добавть функции, которые создают Navigation Controllers
-        tabbar.viewControllers = [createSearchNC(), createFavoritesNC()]
-        
-        return tabbar
-    }
+//    //(4 этап) - перенесли в функции создание UINavigationControllers, плюс там сразу добавили значки и заголовки для tabBar
+//    func createSearchNC() -> UINavigationController {
+//        let searchVC = SearchVC()
+//        searchVC.title = "Search"
+//        searchVC.tabBarItem = UITabBarItem(tabBarSystemItem: .search, tag: 0)
+//
+//        return UINavigationController(rootViewController: searchVC)
+//    }
+//
+//    func createFavoritesNC() -> UINavigationController {
+//        let favoritesListVC = FavoritesListVC()
+//        favoritesListVC.title = "Favorites"
+//        favoritesListVC.tabBarItem = UITabBarItem(tabBarSystemItem: .favorites, tag: 1)
+//
+//        return UINavigationController(rootViewController: favoritesListVC)
+//    }
+//
+//    //(5) - создадим функцию, которая создаст UITabBarController(), внутри которого наши Navigation Controllers
+//    func createTabbar() -> UITabBarController {
+//        let tabbar = UITabBarController()
+//        UITabBar.appearance().tintColor = .systemGreen
+//        //в массив viewControllers можно добавть функции, которые создают Navigation Controllers
+//        tabbar.viewControllers = [createSearchNC(), createFavoritesNC()]
+//
+//        return tabbar
+//    }
     
     
     func sceneDidDisconnect(_ scene: UIScene) {
