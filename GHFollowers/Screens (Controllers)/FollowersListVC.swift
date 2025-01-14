@@ -109,11 +109,11 @@ class FollowersListVC: UIViewController {
     }
     
     func test() {
-        print("test")
+        //предположим тут создана классная функция, которую нужно двинуть в main
     }
     
     func test3() {
-        
+        //предположим тут создана классная функция, которую нужно двинуть в main
     }
     
     
