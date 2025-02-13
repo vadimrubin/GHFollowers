@@ -18,11 +18,13 @@ class GFTitileLabel: UILabel {
         fatalError("init(coder:) has not been implemented")
     }
     
-    init(textAlignment: NSTextAlignment, fontSize: CGFloat) {
-        super.init(frame: .zero)
+    convenience init(textAlignment: NSTextAlignment, fontSize: CGFloat) {
+        self.init(frame: .zero)
+        
+//        super.init(frame: .zero) т.к. сделали convenience init, то эта строчка больше не работает, вместо неё код выше - self.init(frame: .zero)
         self.textAlignment = textAlignment
         font = UIFont.systemFont(ofSize: fontSize, weight: .bold)
-        configure()
+//        configure() и т.к. convenience init теперь, то configure здесь нам не нужно вызывать. self.init(frame: .zero) вызывает основной init на 12-15 строчках.
     }
     
     private func configure() {

@@ -12,6 +12,7 @@ class SearchVC: UIViewController {
     let logoImageView = UIImageView()
     let usernameTextField = GFTextField()
     let callToActionButton = GFButton(backgroudColor: .systemGreen, title: "Get Followers")
+    var logoImageViewTopConstraint: NSLayoutConstraint!
     
     //создаем computed property
     var isUserNameEntered: Bool {
@@ -30,6 +31,7 @@ class SearchVC: UIViewController {
     
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
+        usernameTextField.text = "" //каждый раз при возврате на SearchVC предыдущий текст удаляется, если он был
         //этот код пишем в цикле viewWillAppear для того, чтобы navigation bar скрывался тогда, когда мы возвращаемся к начальному экрану
         //если это сделать во viewDidLoad, то navigation bar будет скрыт только при первом запуске экрана
         //navigationController?.isNavigationBarHidden = true - не совсем корректно работает, т.к. когда мы возвращаемся на половину предыдущего экрана свайпом, то viewWillAppear скрывает navigation bar, и если с половины экрана вернуться обратно, то на следующем экране viewDidLoad ещё не запускается и не меняет значение avigationController?.isNavigationBarHidden на false
@@ -41,11 +43,14 @@ class SearchVC: UIViewController {
         view.addSubview(logoImageView)
         //хотим использовать auto layout
         logoImageView.translatesAutoresizingMaskIntoConstraints = false
-        logoImageView.image = UIImage(named: "gh-logo")
+        logoImageView.image = Images.ghLogo
+        
+        let topConstraintConstant: CGFloat = DeviceTypes.isiPhoneSE || DeviceTypes.isiPhone8Zoomed ? 20 : 80
+        logoImageViewTopConstraint = logoImageView.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor, constant: topConstraintConstant)
+        logoImageViewTopConstraint.isActive = true
         
         //задаем constraints через метод .activate добавляя в array нужные нам constraints
         NSLayoutConstraint.activate([
-            logoImageView.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor, constant: 80),
             logoImageView.centerXAnchor.constraint(equalTo: view.centerXAnchor),
             logoImageView.heightAnchor.constraint(equalToConstant: 200),
             logoImageView.widthAnchor.constraint(equalToConstant: 200)
@@ -98,12 +103,14 @@ class SearchVC: UIViewController {
             return
             }
         
+        usernameTextField.resignFirstResponder() //хотим убрать клавиатуру при переходе на следующий экран, чтобы, когда пользователь свайпил обратно на пол экрана, там не было видно клавиатуру (EdgeCase)
+        
         //создаем экземпляр класса
-        let followerListVC = FollowersListVC()
+        let followerListVC = FollowersListVC(username: usernameTextField.text ?? "")
         //передаем значение, которое ввели в text field, на следущий VC в переменную userName
-        followerListVC.username = usernameTextField.text
-        //меняем title у Navigation Controller на то, что написано в text field
-        followerListVC.title = usernameTextField.text
+//        followerListVC.username = usernameTextField.text
+//        //меняем title у Navigation Controller на то, что написано в text field
+//        followerListVC.title = usernameTextField.text
         //показываем следующий VC
         navigationController?.pushViewController(followerListVC, animated: true)
     }

@@ -149,11 +149,12 @@ class NetworkManager {
             
             //если у нас есть data, то используем do-catch блок
             do {
-                //JSONDecoder() - это объект, который преобразует data в наши объекты
-                //JSONDecoder() - работает наоборот, преобразует наши объекты в data
+                //JSONDecoder() - это объект, который преобразует JSON-objects в наши объекты/data
+                //JSONEncoder() - работает наоборот, преобразует наши объекты/data в JSON-objects
                 let decoder = JSONDecoder()
                 //используем keyDecodingStrategy, которая конвертит url from snake_Case to camelCase
                 decoder.keyDecodingStrategy = .convertFromSnakeCase
+                decoder.dateDecodingStrategy = .iso8601
                 //здесь мы хотим чтобы создался array из объектов Followers используя decoder.decode из data. Data - это то, что выше получили из guard let data = data
                 let user = try decoder.decode(User.self, from: data)
                 //УСПЕШНЫЙ РЕЗУЛЬТАТ ФУНКЦИИ getFollowers.
@@ -171,6 +172,49 @@ class NetworkManager {
         }
         
         //эта строчка кода действительно запускает Network Call, без неё ничего не выйдет, всё что выше - это просто настройка
+        task.resume()
+    }
+    
+    func downloadImage(from urlString: String, completed: @escaping (UIImage?) -> Void) {
+        //переводим urlString из String в NSString
+        let cacheKey = NSString(string: urlString)
+        
+        //проверяем, есть ли картинка уже в Кэше, если есть, то обновляем картинку в UI и уходим из функции. Если нет, то идём дальше по коду
+        if let image = cache.object(forKey: cacheKey) {
+            completed(image)
+            return
+        }
+        
+        //проверяем, что url, который мы передаем, это валидный url
+        guard let url = URL(string: urlString) else {
+            completed(nil)
+            return
+        }
+        
+        //создаем задачу по загрузке картинки и обновления UI в main thread
+        let task = URLSession.shared.dataTask(with: url) { [weak self] data, response, error in
+            //из-за [weak self] self.image теперь опциональное значение и его нужно unwrap, следующая строчка кода помогает это сделать
+            guard let self = self, //записываем комплексный guard let вместо каждого отдельного кейса внизу
+                    error == nil,
+                    let response = response as? HTTPURLResponse, response.statusCode == 200,
+                    let data = data, let image = UIImage(data: data) else {
+                completed(nil)
+                return
+            }
+//
+//            // если ошибка не nil (т.е. она существует), то уходим в блок return
+//            if error != nil { return }
+//            //если repsonse валиден и его статус равен 200 (успешно), то идем дальше по коду. Если нет, то return
+//            guard let response = response as? HTTPURLResponse, response.statusCode == 200 else { return }
+//            //если есть data, то идём дальше по коду. Если нет, то return
+//            guard let data = data else { return }
+//            //создаем картинку из успешной data
+//            guard let image = UIImage(data: data) else { return }
+//            //добавляем картинку в Кэш
+            self.cache.setObject(image, forKey: cacheKey)
+            //обновляем UI, добавляя картинку, в main thread
+            completed(image)
+        }
         task.resume()
     }
 }

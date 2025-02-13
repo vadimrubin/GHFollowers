@@ -10,7 +10,7 @@ import UIKit
 class GFAlertVC: UIViewController {
     
     //на View будет другой View меньшего размера в котором будет три элемента: titleLabel, messageLabel, actionButter
-    let containerView = UIView()
+    let containerView = GFAlertContainerView()
     let titleLabel = GFTitileLabel(textAlignment: .center, fontSize: 20)
     let messageLabel = GFBodyLabel(textAlignment: .center)
     let actionButton = GFButton(backgroudColor: .systemPink, title: "Ok")
@@ -38,7 +38,7 @@ class GFAlertVC: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         //устанавливаем слегка прозрачный темный background
-        view.backgroundColor = UIColor(red: 0, green: 0, blue: 0, alpha: 0.75)
+        view.backgroundColor = UIColor.black.withAlphaComponent(0.75)
         configureContainerView()
         configureTitleLabel()
         configureActionButton()
@@ -48,11 +48,6 @@ class GFAlertVC: UIViewController {
     //конфигурируем containerView
     func configureContainerView() {
         view.addSubview(containerView)
-        containerView.backgroundColor = .systemBackground
-        containerView.layer.cornerRadius = 16
-        containerView.layer.borderWidth = 2
-        containerView.layer.borderColor = UIColor.white.cgColor
-        containerView.translatesAutoresizingMaskIntoConstraints = false
         
         //устанавливаем размер кастомного Alert, он будет располагаться по центру, размер 280 на 220 пунктов
         NSLayoutConstraint.activate([

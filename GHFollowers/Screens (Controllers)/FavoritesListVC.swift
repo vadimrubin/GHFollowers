@@ -8,7 +8,7 @@
 import UIKit
 
 //VC для показа Favorites
-class FavoritesListVC: UIViewController {
+class FavoritesListVC: GFDataLoadingVC {
     
     let favoritesTableView = UITableView()
     var favorites: [Follower] = []
@@ -80,9 +80,9 @@ extension FavoritesListVC: UITableViewDataSource, UITableViewDelegate {
     //показываем destVC при нажатии на ячейку
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         let favorite = favorites[indexPath.row]
-        let destVC = FollowersListVC()
-        destVC.username = favorite.login
-        destVC.title = favorite.login
+        let destVC = FollowersListVC(username: favorite.login)
+//        destVC.username = favorite.login
+//        destVC.title = favorite.login
         
         navigationController?.pushViewController(destVC, animated: true)
     }

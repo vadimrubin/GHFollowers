@@ -8,6 +8,7 @@
 import Foundation
 
 extension String {
+    //этот extension больше не используем, но сохраняем его в проекте, т.к. может быть очень полезным 
     
     func convertToDate() -> Date? {
         let dateFormatter = DateFormatter()

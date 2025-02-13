@@ -24,13 +24,14 @@ class GFButton: UIButton {
     }
     
     //переписываем init, чтобы когда добавлять кнопку во VC мы могли там указать только бэкграунд и тайтл, в остальном кнопка всегда будет одинаковая
-    init(backgroudColor: UIColor, title: String) {
+    convenience init(backgroudColor: UIColor, title: String) {
         //эта строчка нужно просто для инициализации, в дальнейшем мы установим frame для кнопки, когда будем создавать constraints
-        super.init(frame: .zero)
+//        super.init(frame: .zero) - убираем, т.к. convenience init
+        self.init(frame: .zero)
         //self. - здесь означает GFButton.
         self.backgroundColor = backgroudColor
         self.setTitle(title, for: .normal)
-        configure()
+//        configure() - убираем, т.к. convenience init
     }
     
     //кастомный код для кнопки

@@ -13,7 +13,7 @@ class FollowerCell: UICollectionViewCell {
     //как и в Stryboard нам нужен reuseID
     static let reuseID = "FollowerCell"
     //клетка состоит из аватара и имени. Оба объекта кастомные
-    let avatarImageView = GFAvatarImageView(frame: .zero)
+    var avatarImageView = GFAvatarImageView(frame: .zero)
     let usernameLabel = GFTitileLabel(textAlignment: .center, fontSize: 16)
     
     override init(frame: CGRect) {
@@ -28,7 +28,12 @@ class FollowerCell: UICollectionViewCell {
     //метод, нужный для того, чтобы передать данные в ячейку
     func set(follower: Follower) {
         usernameLabel.text = follower.login
-        avatarImageView.downloadImage(from: follower.avatarUrl)
+        NetworkManager.shared.downloadImage(from: follower.avatarUrl) { [weak self] image in
+            guard let self = self else { return }
+            DispatchQueue.main.async {
+                self.avatarImageView.image = image
+            }
+        }
     }
     
     //конфигурируем ячейку

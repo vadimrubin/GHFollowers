@@ -26,12 +26,12 @@ class GFItemInfoView: UIView {
         fatalError("init(coder:) has not been implemented")
     }
     
-    init(sfSymbol: String, label: String, countingLabel: String) {
-        super.init(frame: .zero)
+    convenience init(sfSymbol: String, label: String, countingLabel: String) {
+        self.init(frame: .zero)
         self.sfSymbol.image = UIImage(systemName: sfSymbol)
         self.label.text = label
         self.countingLabel.text = countingLabel
-        configure()
+//        configure()
     }
     
     private func configure() {

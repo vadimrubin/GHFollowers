@@ -12,7 +12,7 @@ protocol FollowersListVCDelegate {
     func didRequestFollowers(for username: String) //действие - показать FollowersListVC по новому user
 }
 
-class FollowersListVC: UIViewController {
+class FollowersListVC: GFDataLoadingVC {
     
     //создаем секции для Collection View. У нас только одна секция, поэтому один кейс main
     //enum - Hashable по дефолту
@@ -31,7 +31,17 @@ class FollowersListVC: UIViewController {
     var page = 1
     var hasMoreFollowers = true
     var isSearching = false
-
+    
+    init(username: String) {
+        super.init(nibName: nil, bundle: nil)
+        self.username = username
+        title = username
+    }
+    
+    required init?(coder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
+    }
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         configureViewController()
@@ -115,7 +125,6 @@ class FollowersListVC: UIViewController {
     func test3() {
         //предположим тут создана классная функция, которую нужно двинуть в main
     }
-    
     
     func getFollowers(username: String, page: Int) {
         //так запускали NetworkManager до изобретения result type

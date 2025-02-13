@@ -40,19 +40,27 @@ class GFUserInfoHeaderVC: UIViewController {
     }
     
     func configureUIElements() {
-        //картинка для аватара
-        avatarImageView.downloadImage(from: user.avatarUrl)
+        //загрузить картинку для аватара
+        downloadAvatarImageView()
         usernameLabel.text = user.login
         //name, location и bio - optional, поэтому указываем дефолтное значение
         nameLabel.text = user.name ?? ""
         locationLabel.text = user.location ?? "No location"
         bioLabel.text = user.bio ?? "No bio...😔"
         bioLabel.numberOfLines = 3
-        
         //SFSymbol для значка локации
         locationImageView.image = UIImage(systemName: SFSymbols.location)
         //по дефолту SFSymbols синие, поэтому меняем цвет
         locationImageView.tintColor = .secondaryLabel
+    }
+    
+    func downloadAvatarImageView() {
+        NetworkManager.shared.downloadImage(from: user.avatarUrl) { [weak self] image in
+            guard let self = self else { return }
+            DispatchQueue.main.async {
+                self.avatarImageView.image = image
+            }
+        }
     }
     
     func addSubviews() {
