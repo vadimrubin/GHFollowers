@@ -43,6 +43,7 @@
 		F8C406CD2D09F65300CEF4B4 /* GFFollowerItemVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = F8C406CC2D09F65300CEF4B4 /* GFFollowerItemVC.swift */; };
 		F8C406D02D09FB3400CEF4B4 /* Dates+Ext.swift in Sources */ = {isa = PBXBuildFile; fileRef = F8C406CF2D09FB3400CEF4B4 /* Dates+Ext.swift */; };
 		F8C406D22D09FB5A00CEF4B4 /* String+Ext.swift in Sources */ = {isa = PBXBuildFile; fileRef = F8C406D12D09FB5A00CEF4B4 /* String+Ext.swift */; };
+		F8C748822D8323C800C7C5C0 /* UIView+Ext.swift in Sources */ = {isa = PBXBuildFile; fileRef = F8C748812D8323C800C7C5C0 /* UIView+Ext.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -84,6 +85,7 @@
 		F8C406CC2D09F65300CEF4B4 /* GFFollowerItemVC.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GFFollowerItemVC.swift; sourceTree = "<group>"; };
 		F8C406CF2D09FB3400CEF4B4 /* Dates+Ext.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Dates+Ext.swift"; sourceTree = "<group>"; };
 		F8C406D12D09FB5A00CEF4B4 /* String+Ext.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "String+Ext.swift"; sourceTree = "<group>"; };
+		F8C748812D8323C800C7C5C0 /* UIView+Ext.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UIView+Ext.swift"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -212,6 +214,7 @@
 				F85803E62C98332F00A2B61E /* UIViewController+Ext.swift */,
 				F8C406CF2D09FB3400CEF4B4 /* Dates+Ext.swift */,
 				F8C406D12D09FB5A00CEF4B4 /* String+Ext.swift */,
+				F8C748812D8323C800C7C5C0 /* UIView+Ext.swift */,
 			);
 			path = Extensions;
 			sourceTree = "<group>";
@@ -387,6 +390,7 @@
 				F8C406CD2D09F65300CEF4B4 /* GFFollowerItemVC.swift in Sources */,
 				F85803E12C932BCD00A2B61E /* GFTitileLabel.swift in Sources */,
 				F85803E52C9342A700A2B61E /* GFAlertVC.swift in Sources */,
+				F8C748822D8323C800C7C5C0 /* UIView+Ext.swift in Sources */,
 				F8B5AAD62C808EC000007959 /* SceneDelegate.swift in Sources */,
 				F81008BA2CB6E6AC008E7F8C /* UserInfoVC.swift in Sources */,
 			);

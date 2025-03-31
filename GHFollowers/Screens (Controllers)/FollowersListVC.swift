@@ -31,6 +31,7 @@ class FollowersListVC: GFDataLoadingVC {
     var page = 1
     var hasMoreFollowers = true
     var isSearching = false
+    var isLoadingMoreFollowers = false
     
     init(username: String) {
         super.init(nibName: nil, bundle: nil)
@@ -67,7 +68,7 @@ class FollowersListVC: GFDataLoadingVC {
     //действие кнопки rightBarButtonItem
     @objc func addButtonTapped() {
         showLoadingView() //так как будем запускать NetworkManager, то нужно показать LoadingView, пока ждем результат
-        
+        isLoadingMoreFollowers = true
         NetworkManager.shared.getUserInfo(for: username) { [weak self] result in //хотим получить инфо по конкретному юзеру
             guard let self = self else { return }
             self.dismissLoadingView() //перестаем показывать LoadingView, так как уже есть результат
@@ -91,6 +92,8 @@ class FollowersListVC: GFDataLoadingVC {
             case .failure(let error): //если кейс неудачный, то тоже показываем Алерт с ошибкой
                 self.presentGFAlertOnMainThread(title: "Something went wrong", message: error.rawValue, buttonTitle: "Ok")
             }
+            
+            self.isLoadingMoreFollowers = false
         }
     }
     
@@ -208,7 +211,7 @@ extension FollowersListVC: UICollectionViewDelegate {
         //если то, сколько мы проскролили больше, чем высота scrollView минус высота экрана
         if offsetY > contentHeight - height {
             //если hasMoreFollowers = false, то ничего не делаем
-            guard hasMoreFollowers else { return }
+            guard hasMoreFollowers, !isLoadingMoreFollowers else { return }
             //увеличиваем значение page, чтобы загружать следующую страницу
             page += 1
             //загружаем новых followers
@@ -237,7 +240,13 @@ extension FollowersListVC: UISearchResultsUpdating, UISearchBarDelegate {
     //UISearchResultsUpdating
     func updateSearchResults(for searchController: UISearchController) {
         // пусть filter это текст, который введен в searchBar, и он НЕ пустой. Если это не так = Текст не введен, то выходим из функции.
-        guard let filter = searchController.searchBar.text, !filter.isEmpty else { return }
+        guard let filter = searchController.searchBar.text, !filter.isEmpty else {
+            filteredFollowers.removeAll()
+            updateData(on: followersArray)
+            isSearching = false
+            return
+        }
+        
         isSearching = true
         //в новый array добавляем followers по фильтру contains
         filteredFollowers = followersArray.filter { $0.login.lowercased().contains(filter.lowercased()) }
@@ -260,7 +269,8 @@ extension FollowersListVC: FollowersListVCDelegate {
         page = 1 //начинаем с первой страницы
         followersArray.removeAll() //удаляем объекты из arrays
         filteredFollowers.removeAll() //удаляем объекты из arrays
-        collectionView.setContentOffset(.zero, animated: true) //сдвигаем collection view в начало
+//        collectionView.setContentOffset(.zero, animated: true) //сдвигаем collection view в начало (заменили эту строчку кода на код ниже, т.к. сдвиг collectionView в начало нормально не работал)
+        collectionView.scrollToItem(at: IndexPath(item: 0, section: 0), at: .top, animated: true)
         getFollowers(username: username, page: page) //запускаем метод getFollowers для юзера из UserInvoVC
     }
     

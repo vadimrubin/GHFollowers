@@ -49,7 +49,7 @@ class GFUserInfoHeaderVC: UIViewController {
         bioLabel.text = user.bio ?? "No bio...😔"
         bioLabel.numberOfLines = 3
         //SFSymbol для значка локации
-        locationImageView.image = UIImage(systemName: SFSymbols.location)
+        locationImageView.image = SFSymbols.location
         //по дефолту SFSymbols синие, поэтому меняем цвет
         locationImageView.tintColor = .secondaryLabel
     }
@@ -64,12 +64,13 @@ class GFUserInfoHeaderVC: UIViewController {
     }
     
     func addSubviews() {
-        view.addSubview(avatarImageView)
-        view.addSubview(usernameLabel)
-        view.addSubview(nameLabel)
-        view.addSubview(locationImageView)
-        view.addSubview(locationLabel)
-        view.addSubview(bioLabel)
+//        view.addSubview(avatarImageView)
+//        view.addSubview(usernameLabel)
+//        view.addSubview(nameLabel)
+//        view.addSubview(locationImageView) 
+//        view.addSubview(locationLabel)
+//        view.addSubview(bioLabel)
+        view.addSubviews(avatarImageView, usernameLabel, nameLabel, locationImageView, locationLabel, bioLabel)
     }
     
     func layoutUI() {

@@ -7,7 +7,11 @@
 
 import UIKit
 
-struct UIHelper {
+//если UIHelper создан, как struct, то у нас есть возможность инициализировать пустую структуру UIHelper
+//let helper = UIHelper()
+//нам это не нужно, поэтому меняем на enum
+
+enum UIHelper {
     
     //создаем UICollectionViewFlowLayout с 3 столбцами
     static func createThreeColumnLayout(in view: UIView) -> UICollectionViewFlowLayout {
