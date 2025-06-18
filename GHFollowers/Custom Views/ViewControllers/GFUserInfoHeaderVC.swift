@@ -41,7 +41,8 @@ class GFUserInfoHeaderVC: UIViewController {
     
     func configureUIElements() {
         //загрузить картинку для аватара
-        downloadAvatarImageView()
+//        downloadAvatarImageView()
+        avatarImageView.downloadImage(fromURL: user.avatarUrl)
         usernameLabel.text = user.login
         //name, location и bio - optional, поэтому указываем дефолтное значение
         nameLabel.text = user.name ?? ""
@@ -54,6 +55,7 @@ class GFUserInfoHeaderVC: UIViewController {
         locationImageView.tintColor = .secondaryLabel
     }
     
+    //эту функцию мы не используем в проекте, так как поменяли на avatarImageView.downloadImage(fromURL: user.avatarUrl)
     func downloadAvatarImageView() {
         NetworkManager.shared.downloadImage(from: user.avatarUrl) { [weak self] image in
             guard let self = self else { return }
@@ -108,7 +110,7 @@ class GFUserInfoHeaderVC: UIViewController {
             bioLabel.topAnchor.constraint(equalTo: avatarImageView.bottomAnchor, constant: -textImagePadding),
             bioLabel.leadingAnchor.constraint(equalTo: avatarImageView.leadingAnchor),
             bioLabel.trailingAnchor.constraint(equalTo: view.trailingAnchor),
-            bioLabel.heightAnchor.constraint(equalToConstant: 60)
+            bioLabel.heightAnchor.constraint(equalToConstant: 90)
         ])
     }
 

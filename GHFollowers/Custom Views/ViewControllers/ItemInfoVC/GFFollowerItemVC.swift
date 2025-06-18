@@ -12,10 +12,15 @@ import Foundation
 //    func showFollowersListVC()
 //}
 
+protocol GFFollowerItemVCDelegate {
+    func didTapGetFollowers(for user: User)  //действие при нажатии кнопки "Get Followers". Переходим на FollowersListVC и показываем новый список followers по user
+}
+
 //создаем GFFollowerItemVC, который наследуется от GFItemInfoVC, соответственно у него есть все методы родительского класса
 class GFFollowerItemVC: GFItemInfoVC {
     
 //    var delegate: showFollowersListVCDelegateProtocol? // свой протокол
+    var delegate: GFFollowerItemVCDelegate?
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -32,7 +37,8 @@ class GFFollowerItemVC: GFItemInfoVC {
     
     //переписываем действие кнопки. Когда кнопка нажата, то GFFollowerItemVC сообщает delegatee (он объявлен в родительском классе), что кнопка нажата и можно выполнять действие didTapGetFollowers
     override func actionButtonTapped() {
-        delegatee.didTapGetFollowers(for: user)
+//        delegatee.didTapGetFollowers(for: user) //это родительский протокол
+        delegate?.didTapGetFollowers(for: user)
     }
     
     //мой Протокол

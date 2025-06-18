@@ -7,14 +7,16 @@
 
 import UIKit
 
-//протокол коммуникаций между UserInfoVC - GFRepoItemVC/FollowersItemVC
+//протокол для коммуникации между FollowersListVC и UserInfoVC
 protocol UserInfoVCDelegate {
-    func didTapGitHubProfile(for user: User) //действие при нажатии кнопки "GitHub Profile". Открываем SafariView и показываем профиль по ссылке
-    func didTapGetFollowers(for user: User)  //действие при нажатии кнопки "Get Followers". Переходим на FollowersListVC и показываем новый список followers по user
+    func didRequestFollowers(for username: String) //действие - показать FollowersListVC по новому user
 }
 
 class UserInfoVC: GFDataLoadingVC {
-
+    
+    let scrollView = UIScrollView()
+    let contentView = UIView()
+    
     let headerView = UIView()
     let itemViewOne = UIView()
     let itemViewTwo = UIView()
@@ -23,13 +25,12 @@ class UserInfoVC: GFDataLoadingVC {
     
     var userName: String!
     
-    var nextUser: String?
-    
-    var delegate: FollowersListVCDelegate!
+    var delegate: UserInfoVCDelegate!
 
     override func viewDidLoad() {
         super.viewDidLoad()
         configureVC()
+        configureScrollView()
         layoutUI()
         getUserInfo()  
     }
@@ -46,6 +47,18 @@ class UserInfoVC: GFDataLoadingVC {
         //ставим кнопку Done на место rightBarButtonItem
         navigationItem.rightBarButtonItem = doneButton
     }
+    
+    func configureScrollView() {
+        view.addSubview(scrollView)
+        scrollView.addSubview(contentView)
+        
+        scrollView.pinToEdges(of: view)
+        contentView.pinToEdges(of: scrollView)
+        NSLayoutConstraint.activate([
+            contentView.widthAnchor.constraint(equalTo: scrollView.widthAnchor),
+            contentView.heightAnchor.constraint(equalToConstant: 600)
+        ])
+    }
 
     // @objc метод для UIBarButtonItem - скрыть VC
     @objc func dismissVC() {
@@ -59,18 +72,18 @@ class UserInfoVC: GFDataLoadingVC {
 
         
         for item in itemViews {
-            view.addSubview(item)
+            contentView.addSubview(item)
             item.translatesAutoresizingMaskIntoConstraints = false
             
             NSLayoutConstraint.activate([
-                item.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: padding),
-                item.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -padding),
+                item.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: padding),
+                item.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -padding),
             ])
         }
         
         NSLayoutConstraint.activate([
-            headerView.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor),
-            headerView.heightAnchor.constraint(equalToConstant: 180),
+            headerView.topAnchor.constraint(equalTo: contentView.topAnchor),
+            headerView.heightAnchor.constraint(equalToConstant: 210),
             
             itemViewOne.topAnchor.constraint(equalTo: headerView.bottomAnchor, constant: padding),
             itemViewOne.heightAnchor.constraint(equalToConstant: itemHeight),
@@ -79,7 +92,7 @@ class UserInfoVC: GFDataLoadingVC {
             itemViewTwo.heightAnchor.constraint(equalToConstant: itemHeight),
             
             dateLabel.topAnchor.constraint(equalTo: itemViewTwo.bottomAnchor, constant: padding),
-            dateLabel.heightAnchor.constraint(equalToConstant: 40)
+            dateLabel.heightAnchor.constraint(equalToConstant: 50)
         ])
     }
     
@@ -103,13 +116,12 @@ class UserInfoVC: GFDataLoadingVC {
     }
     
     func configureUIElements(with user: User) {
-        let reposVC = GFRepoItemVC(user: user)
-        reposVC.delegatee = self
-        self.add(childVC: reposVC, to: self.itemViewOne)
+        //первый вариант добавить delegate в init
+        self.add(childVC: GFRepoItemVC(user: user, delegate: self), to: self.itemViewOne)
         
-        self.nextUser = user.login
+        //второй вариант - delegate устанавливается отдельно
         let followersVC = GFFollowerItemVC(user: user)
-        followersVC.delegatee = self
+        followersVC.delegate = self
         self.add(childVC: followersVC, to: self.itemViewTwo)
         
         self.add(childVC: GFUserInfoHeaderVC(user: user), to: self.headerView)
@@ -126,7 +138,7 @@ class UserInfoVC: GFDataLoadingVC {
 }
 
 //действия протокола коммуникаций между UserInfoVC - GFRepoItemVC/FollowersItemVC
-extension UserInfoVC: UserInfoVCDelegate {
+extension UserInfoVC: GFRepoItemVCDelegate {
     //действие, которое просит запустить GFRepoItemVC, при нажатии на кнопку
     func didTapGitHubProfile(for user: User) {
         //проверяем url
@@ -137,7 +149,9 @@ extension UserInfoVC: UserInfoVCDelegate {
         }
         presentSafariVC(with: url) //показываем SafariView с успешным url
     }
-    
+}
+
+extension UserInfoVC: GFFollowerItemVCDelegate {
     //действие, которое просит запустить GFFollowerItemVC, при нажатии на кнопку
     func didTapGetFollowers(for user: User) {
         //проверяем есть ли followers у юзера
@@ -147,9 +161,11 @@ extension UserInfoVC: UserInfoVCDelegate {
             return //return здесь означает, что мы выходим из всей функции didTapGetFollowers и не переходим к delegate.didRequestFollowers(for: user.login)
         }
         //если user.followers != 0, то выполняем следующий код
-        delegate.didRequestFollowers(for: user.login) //FollowersListVCDelegate - сообщаем FollowersListVC, что хотим выполнить func didRequestFollowers
+        delegate.didRequestFollowers(for: user.login) //UserInfoVCDelegate - сообщаем FollowersListVC, что хотим выполнить func didRequestFollowers
         dismissVC() //скрываем текущий VC
     }
-
 }
+
+
+
     

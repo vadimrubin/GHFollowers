@@ -31,6 +31,15 @@ class GFAvatarImageView: UIImageView {
         translatesAutoresizingMaskIntoConstraints = false
     }
     
+    func downloadImage(fromURL url: String) {
+        NetworkManager.shared.downloadImage(from: url) { [weak self] image in
+            guard let self = self else { return }
+            DispatchQueue.main.async {
+                self.image = image
+            }
+        }
+    }
+
     //создаем функцию, которая будет загружать картинку по url, если какая-то ошибка то мы просто уходим в { return } и загружаем стандартную картинку из Бандла
     //перенесли функцию в Network Manager
 //    func downloadImage(from urlString: String) {

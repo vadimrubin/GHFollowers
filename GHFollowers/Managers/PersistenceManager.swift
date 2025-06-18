@@ -30,23 +30,23 @@ enum PersistanceManager {
         //1. мы выгружаем объекты (Favorites) из UserDefaults
         retrieveFavorites { result in //могут быть два варианта результата: success и failure
             switch result {
-            case .success(let favorites): //получили какие-то объекты, либо nil
-                var retrievedFavorites = favorites //передаем эти объекты или nil во временную переменную
+            case .success(var favorites): //получили какие-то объекты, либо nil
+//                var retrievedFavorites = favorites //передаем эти объекты или nil во временную переменную
                 switch actionType { //теперь в зависисости от actionType добавляем объект или удаляем
                 case .add: //если кейс добавить
                     //проверяем нет ли среди выгруженных объектов нашего объекта, с которым хотим сделать дейстия
-                    guard !retrievedFavorites.contains(follower) else {
+                    guard !favorites.contains(follower) else {
                         //если есть, то завершаем функцию и передаем ошибку
                         completed(.alreadyInFavorites)
                         return //выходим из функции
                     }
                     //если объект новый, то добавляем его во временуую переменную
-                    retrievedFavorites.append(follower)
+                    favorites.append(follower)
                 case .remove: //если кейс удалить
-                    retrievedFavorites.removeAll { $0.login == follower.login } //удаляем его, если условие по поиску сработает ($0.login == follower.login)
+                    favorites.removeAll { $0.login == follower.login } //удаляем его, если условие по поиску сработает ($0.login == follower.login)
                 }
                 //запускаем функцию сохранения
-                completed(save(followers: retrievedFavorites))
+                completed(save(followers: favorites))
                 
             case .failure(let error): //получили ошибку, её и отдаем в completed
                 completed(error)

@@ -7,10 +7,7 @@
 
 import UIKit
 
-//протокол для коммуникации между FollowersListVC и UserInfoVC
-protocol FollowersListVCDelegate {
-    func didRequestFollowers(for username: String) //действие - показать FollowersListVC по новому user
-}
+
 
 class FollowersListVC: GFDataLoadingVC {
     
@@ -261,8 +258,8 @@ extension FollowersListVC: UISearchResultsUpdating, UISearchBarDelegate {
     }
 }
 
-// действие протокола FollowersListVCDelegate
-extension FollowersListVC: FollowersListVCDelegate {
+// действие протокола UserInfoVCDelegate
+extension FollowersListVC: UserInfoVCDelegate {
     func didRequestFollowers(for username: String) {
         self.username = username //новый username, который мы получаем из UserInfoVC
         title = username //новый title, который равен новому username

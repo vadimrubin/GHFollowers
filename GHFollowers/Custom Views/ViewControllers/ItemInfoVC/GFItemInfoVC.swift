@@ -7,6 +7,14 @@
 
 import UIKit
 
+//протокол коммуникаций между UserInfoVC - GFRepoItemVC/FollowersItemVC
+//изачально мы объявили протокол в родительском VC, но проблема в том, что child-VC имееют доступ к обеим функциям, а нам это не сильно нужно.
+//поэтому создаем отдельные протоколы в каждом childVC только с одной функцией, которая нужна
+//protocol ItemInfoVCDelegate {
+//    func didTapGitHubProfile(for user: User) //действие при нажатии кнопки "GitHub Profile". Открываем SafariView и показываем профиль по ссылке
+//    func didTapGetFollowers(for user: User)  //действие при нажатии кнопки "Get Followers". Переходим на FollowersListVC и показываем новый список followers по user
+//}
+
 //создаем VC, который будет родителем для VСs, которые показывают информацию по Гитам и Фолловерам
 //этот VC имеют основную структурную информацию и Layout
 class GFItemInfoVC: UIViewController {
@@ -18,7 +26,7 @@ class GFItemInfoVC: UIViewController {
     
     var user: User!
     //delegatee - для связи между ChildVCs - GFRepoItemVC&GFFollowerItemVC c UserInfoVC
-    var delegatee: UserInfoVCDelegate! //мб нужно добавить weak к var delegatee, так было в курсе, но появляется ошибка
+//    var delegatee: ItemInfoVCDelegate! //мб нужно добавить weak к var delegatee, так было в курсе, но появляется ошибка
     
     //создаем кастомный init для GFItemsInfoVC
     init(user: User!) {
