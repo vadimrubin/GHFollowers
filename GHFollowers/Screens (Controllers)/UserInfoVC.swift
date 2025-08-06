@@ -98,19 +98,32 @@ class UserInfoVC: GFDataLoadingVC {
     
     func getUserInfo() {
         //загружаем информацию по Юзеру через NetworkManager
-        NetworkManager.shared.getUserInfo(for: userName) { [weak self] result in
-            //штука, нужная для [weak self]
-            guard let self = self else { return }
-            
-            //результат запроса - это success или failure. Проходим по каждому варианту.
-            switch result {
-            case .success(let user):
-                DispatchQueue.main.async {
-                    self.configureUIElements(with: user)
+//        NetworkManager.shared.getUserInfo(for: userName) { [weak self] result in
+//            //штука, нужная для [weak self]
+//            guard let self = self else { return }
+//            
+//            //результат запроса - это success или failure. Проходим по каждому варианту.
+//            switch result {
+//            case .success(let user):
+//                DispatchQueue.main.async {
+//                    self.configureUIElements(with: user)
+//                }
+//                
+//            case .failure(let error):
+//                self.presentGFAlertOnMainThread(title: "Something went wrong", message: error.rawValue, buttonTitle: "Ok")
+//            }
+//        }
+        //т.к. func getUserInfo не отмечена, как async, то код ниже нужно вложить в Task
+        Task {
+            do {
+                let user = try await NetworkManager.shared.getUserInfo(for: userName)
+                configureUIElements(with: user)
+            } catch {
+                if let error = error as? ErrorMessages {
+                    presentGFAlert(title: "Something went wrong here", message: error.rawValue, buttonTitle: "Ok")
+                } else {
+                    presentDefaultError()
                 }
-                
-            case .failure(let error):
-                self.presentGFAlertOnMainThread(title: "Something went wrong", message: error.rawValue, buttonTitle: "Ok")
             }
         }
     }
@@ -144,7 +157,7 @@ extension UserInfoVC: GFRepoItemVCDelegate {
         //проверяем url
         guard let url = URL(string: user.htmlUrl) else {
             //если url не получился, то показываем Alert
-            presentGFAlertOnMainThread(title: "Invalid URL", message: "The URL attached to the user is invalid", buttonTitle: "Ok")
+            presentGFAlert(title: "Invalid URL", message: "The URL attached to the user is invalid", buttonTitle: "Ok")
             return // выходим из метода
         }
         presentSafariVC(with: url) //показываем SafariView с успешным url
@@ -157,7 +170,7 @@ extension UserInfoVC: GFFollowerItemVCDelegate {
         //проверяем есть ли followers у юзера
         guard user.followers != 0 else {
             //если user.followers = 0, то показываем Alert
-            presentGFAlertOnMainThread(title: "No followers", message: "This user has no followers", buttonTitle: "Ok")
+            presentGFAlert(title: "No followers", message: "This user has no followers", buttonTitle: "Ok")
             return //return здесь означает, что мы выходим из всей функции didTapGetFollowers и не переходим к delegate.didRequestFollowers(for: user.login)
         }
         //если user.followers != 0, то выполняем следующий код

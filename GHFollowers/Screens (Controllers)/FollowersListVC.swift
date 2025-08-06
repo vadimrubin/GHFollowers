@@ -66,31 +66,50 @@ class FollowersListVC: GFDataLoadingVC {
     @objc func addButtonTapped() {
         showLoadingView() //так как будем запускать NetworkManager, то нужно показать LoadingView, пока ждем результат
         isLoadingMoreFollowers = true
-        NetworkManager.shared.getUserInfo(for: username) { [weak self] result in //хотим получить инфо по конкретному юзеру
-            guard let self = self else { return }
-            self.dismissLoadingView() //перестаем показывать LoadingView, так как уже есть результат
-            
-            switch result {
-                
-            case .success(let user): //кейс успешный и у нас есть объект user
-                let favoriteUser = Follower(login: user.login, avatarUrl: user.avatarUrl) //создаем объект Follower с данными user
-                //запускаем PersistanceManager с объектом favoriteUser и хотим сохранить (.add) его в UseDefaults
-                PersistanceManager.updateWith(follower: favoriteUser, actionType: .add) { [weak self] error in
-                    guard let self = self else { return } //штука нужная т.к. выше [weak self]
-                    //error is optional, поэтому нужно баиндить
-                    guard let error = error else {
-                        //если нет ошибки, то показываем успешный Алерт
-                        self.presentGFAlertOnMainThread(title: "Success!", message: "You've succesfully favorited this user", buttonTitle: "Good!")
-                        return //и выходим из функции
-                    }
-                    self.presentGFAlertOnMainThread(title: "Something went wrong", message: error.rawValue, buttonTitle: "Ok") //если есть ошибка, то показываем Alert с этой ошибкой
-                    
+//        NetworkManager.shared.getUserInfo(for: username) { [weak self] result in //хотим получить инфо по конкретному юзеру
+//            guard let self = self else { return }
+//            self.dismissLoadingView() //перестаем показывать LoadingView, так как уже есть результат
+//            
+//            switch result {
+//                
+//            case .success(let user): //кейс успешный и у нас есть объект user
+//                self.addUserToFavorites(user)
+//            case .failure(let error): //если кейс неудачный, то тоже показываем Алерт с ошибкой
+//                self.presentGFAlertOnMainThread(title: "Something went wrong", message: error.rawValue, buttonTitle: "Ok")
+//            }
+//            
+//            self.isLoadingMoreFollowers = false
+//        }
+//        
+        Task {
+            do {
+                let user = try await NetworkManager.shared.getUserInfo(for: username)
+                addUserToFavorites(user)
+                dismissLoadingView()
+            } catch {
+                if let error = error as? ErrorMessages {
+                    presentGFAlert(title: "Something went wrong", message: error.rawValue, buttonTitle: "Ok")
+                } else {
+                    presentDefaultError()
                 }
-            case .failure(let error): //если кейс неудачный, то тоже показываем Алерт с ошибкой
-                self.presentGFAlertOnMainThread(title: "Something went wrong", message: error.rawValue, buttonTitle: "Ok")
+                dismissLoadingView()
             }
+        }
+    }
+    
+    func addUserToFavorites(_ user: User) {
+        let favoriteUser = Follower(login: user.login, avatarUrl: user.avatarUrl) //создаем объект Follower с данными user
+        //запускаем PersistanceManager с объектом favoriteUser и хотим сохранить (.add) его в UseDefaults
+        PersistanceManager.updateWith(follower: favoriteUser, actionType: .add) { [weak self] error in
+            guard let self else { return } //штука нужная т.к. выше [weak self]
+            //error is optional, поэтому нужно баиндить
+            guard let error else {
+                //если нет ошибки, то показываем успешный Алерт
+                self.presentGFAlertOnMainThread(title: "Success!", message: "You've succesfully favorited this user", buttonTitle: "Good!")
+                return //и выходим из функции
+            }
+            self.presentGFAlertOnMainThread(title: "Something went wrong", message: error.rawValue, buttonTitle: "Ok") //если есть ошибка, то показываем Alert с этой ошибкой
             
-            self.isLoadingMoreFollowers = false
         }
     }
     
@@ -138,32 +157,73 @@ class FollowersListVC: GFDataLoadingVC {
         //теперь запускаем NetworkManager следующим образом с учётом result type
         //[weak self] - NetworkManager имеет строгую взаимосвязь с FollowersListVC, это может способствовать memory leaks (утечка памяти). Чтобы этого избежать нам нужно добавить [weak self] в result
         showLoadingView()
-        NetworkManager.shared.getFollowers(for: username, page: page) { [weak self] result in
-            //result - это либо success, либо failure. Поэтому теперь можем воспользоваться switch и написать результат для каждого кейса
-            //из-за [weak self] self.followersArray теперь опциональное значение и его нужно unwrap, следующая строчка кода помогает это сделать
-            guard let self = self else { return }
-            
-            self.dismissLoadingView()
-            
-            switch result {
-            case .success(let followers):
-                //если количество followers, которые загрузили, меньше, чем 100, то меняем значение hasMoreFollowers на false
-                if followers.count < 100 { self.hasMoreFollowers = false }
-                //добавляем новых followers в основной array
-                self.followersArray.append(contentsOf: followers)
-                if self.followersArray.isEmpty {
-                    let message = "This user doesn't have any followers. Go follow them 😀"
-                    DispatchQueue.main.async {
-                        self.showEmptyStateView(with: message, in: self.view)
-                        return
-                    }
+        //так запускали Network Manager до изобретения async/await
+//        NetworkManager.shared.getFollowers(for: username, page: page) { [weak self] result in
+//            //result - это либо success, либо failure. Поэтому теперь можем воспользоваться switch и написать результат для каждого кейса
+//            //из-за [weak self] self.followersArray теперь опциональное значение и его нужно unwrap, следующая строчка кода помогает это сделать
+//            guard let self = self else { return }
+//            
+//            self.dismissLoadingView()
+//            
+//            switch result {
+//            case .success(let followers):
+//                //если количество followers, которые загрузили, меньше, чем 100, то меняем значение hasMoreFollowers на false
+//                self.updateUI(with: followers)
+//                
+//            case .failure(let error):
+//                self.presentGFAlertOnMainThread(title: "Bad Stuff Happend", message: error.rawValue, buttonTitle: "Ok")
+//            }
+//        }
+       
+        //async/await
+        //используем Task для того, чтобы уйти от ошибки, что общая func, в которой мы сейчас находимся (func getFollowers(username: String, page: Int)) не поддерживает concurrency. Поэтому мы ставим concurrency блок в Task
+        Task {
+            do {
+                //все успешные случаи в блоке do. Когда мы используем try, то ошибку нужно обработать в блоке catch
+                let followers = try await NetworkManager.shared.getFollowers(for: username, page: page) //success case
+                updateUI(with: followers)
+                dismissLoadingView()
+            } catch {
+                //все плохие случаи в блоке catch
+                if let errorMesage = error as? ErrorMessages {
+                    //здесь мы указываем что делать, если ошибка, которая получилась в Network call относится нашей кастомной ErrorMessage
+                    presentGFAlert(title: "Bad Stuff Happend", message: errorMesage.rawValue, buttonTitle: "Ok")
+                } else {
+                    //если мы уходим в эту ветку, то это означает, что у нас появилась какая-то swift ошибка в network manager, соотвественно мы просто показываем дефолтный alert
+                    presentDefaultError()
                 }
-                self.updateData(on: self.followersArray)
-                
-            case .failure(let error):
-                self.presentGFAlertOnMainThread(title: "Bad Stuff Happend", message: error.rawValue, buttonTitle: "Ok")
+                dismissLoadingView()
             }
         }
+        
+//        //другой способ сделать Task, если нам не нужно быть точным в том, какую ошибку мы хотим показать. Мы просто получаем успешный результат, либо выбрасываем дефолтную ошибку. В синтаксисе try? мы не работаем с ошибкой, она либо nil, либо показываем дефолтный alert
+//        Task {
+//            guard let followers = try? await NetworkManager.shared.getFollowers(for: username, page: page) else {
+//                //если data = followers не получили, то:
+//                presentDefaultError()
+//                dismissLoadingView()
+//                return
+//            }
+//            //если мы получили data = followers, то
+//            updateUI(with: followers)
+//            dismissLoadingView()
+//        }
+        
+        
+    }
+    
+    func updateUI(with followers: [Follower]) {
+        if followers.count < 100 { self.hasMoreFollowers = false }
+        //добавляем новых followers в основной array
+        self.followersArray.append(contentsOf: followers)
+        if self.followersArray.isEmpty {
+            let message = "This user doesn't have any followers. Go follow them 😀"
+            DispatchQueue.main.async {
+                self.showEmptyStateView(with: message, in: self.view)
+                return
+            }
+        }
+        self.updateData(on: self.followersArray)
     }
     
     //функция, которая конфигурирует dataSource для UICollectionViewDiffableDataSource. Мы ещё не передаем реальные данные в ячейку, а только говорим какие данные будут в ней и какой формат ячейки

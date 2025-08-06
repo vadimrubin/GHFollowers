@@ -11,8 +11,7 @@ class SearchVC: UIViewController {
     
     let logoImageView = UIImageView()
     let usernameTextField = GFTextField()
-    let callToActionButton = GFButton(backgroudColor: .systemGreen, title: "Get Followers")
-    var logoImageViewTopConstraint: NSLayoutConstraint!
+    let callToActionButton = GFButton(color: .systemGreen, title: "Get Followers", systemImageName: "person.3")
     
     //создаем computed property
     var isUserNameEntered: Bool {
@@ -46,11 +45,10 @@ class SearchVC: UIViewController {
         logoImageView.image = Images.ghLogo
         
         let topConstraintConstant: CGFloat = DeviceTypes.isiPhoneSE || DeviceTypes.isiPhone8Zoomed ? 20 : 80
-        logoImageViewTopConstraint = logoImageView.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor, constant: topConstraintConstant)
-        logoImageViewTopConstraint.isActive = true
         
         //задаем constraints через метод .activate добавляя в array нужные нам constraints
         NSLayoutConstraint.activate([
+            logoImageView.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor, constant: topConstraintConstant),
             logoImageView.centerXAnchor.constraint(equalTo: view.centerXAnchor),
             logoImageView.heightAnchor.constraint(equalToConstant: 200),
             logoImageView.widthAnchor.constraint(equalToConstant: 200)
@@ -75,6 +73,7 @@ class SearchVC: UIViewController {
         view.addSubview(callToActionButton)
         //конфигурируем что делать, когда нажимаем на кнопку
         callToActionButton.addTarget(self, action: #selector(pushFollowerListVC), for: .touchUpInside)
+        callToActionButton.configuration?.subtitle = "Searching for followers"
         
         NSLayoutConstraint.activate([
             //c trailingAnchor и bottomAnchor нужно использовать отрицательные числа

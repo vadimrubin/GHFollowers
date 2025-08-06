@@ -57,11 +57,15 @@ class GFUserInfoHeaderVC: UIViewController {
     
     //эту функцию мы не используем в проекте, так как поменяли на avatarImageView.downloadImage(fromURL: user.avatarUrl)
     func downloadAvatarImageView() {
-        NetworkManager.shared.downloadImage(from: user.avatarUrl) { [weak self] image in
-            guard let self = self else { return }
-            DispatchQueue.main.async {
-                self.avatarImageView.image = image
-            }
+//        NetworkManager.shared.downloadImage(from: user.avatarUrl) { [weak self] image in
+//            guard let self = self else { return }
+//            DispatchQueue.main.async {
+//                self.avatarImageView.image = image
+//            }
+//        }
+        Task {
+            let image = await NetworkManager.shared.downloadImage(from: user.avatarUrl)
+            self.avatarImageView.image = image
         }
     }
     

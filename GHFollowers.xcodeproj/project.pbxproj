@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		5BDC923C2E33CF1600B17D25 /* FollowerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5BDC923B2E33CF1600B17D25 /* FollowerView.swift */; };
 		F81008A12C9896AD008E7F8C /* Follower.swift in Sources */ = {isa = PBXBuildFile; fileRef = F81008A02C9896AD008E7F8C /* Follower.swift */; };
 		F81008A32C9898B4008E7F8C /* User.swift in Sources */ = {isa = PBXBuildFile; fileRef = F81008A22C9898B4008E7F8C /* User.swift */; };
 		F81008A62C99A007008E7F8C /* NetworkManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = F81008A52C99A007008E7F8C /* NetworkManager.swift */; };
@@ -48,6 +49,7 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		5BDC923B2E33CF1600B17D25 /* FollowerView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FollowerView.swift; sourceTree = "<group>"; };
 		F81008A02C9896AD008E7F8C /* Follower.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Follower.swift; sourceTree = "<group>"; };
 		F81008A22C9898B4008E7F8C /* User.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = User.swift; sourceTree = "<group>"; };
 		F81008A52C99A007008E7F8C /* NetworkManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NetworkManager.swift; sourceTree = "<group>"; };
@@ -101,6 +103,15 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		5BDC923A2E33CEE800B17D25 /* FollowerCell */ = {
+			isa = PBXGroup;
+			children = (
+				F81008AB2C9C680F008E7F8C /* FollowerCell.swift */,
+				5BDC923B2E33CF1600B17D25 /* FollowerView.swift */,
+			);
+			path = FollowerCell;
+			sourceTree = "<group>";
+		};
 		F81008A42C999E26008E7F8C /* Managers */ = {
 			isa = PBXGroup;
 			children = (
@@ -123,7 +134,7 @@
 		F81008AA2C9C67E6008E7F8C /* Cells */ = {
 			isa = PBXGroup;
 			children = (
-				F81008AB2C9C680F008E7F8C /* FollowerCell.swift */,
+				5BDC923A2E33CEE800B17D25 /* FollowerCell */,
 				F89589EC2D30079A00D561B7 /* FavoriteCell.swift */,
 			);
 			path = Cells;
@@ -361,6 +372,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				5BDC923C2E33CF1600B17D25 /* FollowerView.swift in Sources */,
 				F81008AE2C9C689E008E7F8C /* GFAvatarImageView.swift in Sources */,
 				F81008A32C9898B4008E7F8C /* User.swift in Sources */,
 				F8B5AAEE2C82068400007959 /* GFTextField.swift in Sources */,
@@ -541,6 +553,7 @@
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchStoryboardName = LaunchScreen;
 				INFOPLIST_KEY_UISupportedInterfaceOrientations = UIInterfaceOrientationPortrait;
+				IPHONEOS_DEPLOYMENT_TARGET = 15.6;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
@@ -567,6 +580,7 @@
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchStoryboardName = LaunchScreen;
 				INFOPLIST_KEY_UISupportedInterfaceOrientations = UIInterfaceOrientationPortrait;
+				IPHONEOS_DEPLOYMENT_TARGET = 15.6;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",

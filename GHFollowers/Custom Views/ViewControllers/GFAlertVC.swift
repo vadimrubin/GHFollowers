@@ -13,7 +13,7 @@ class GFAlertVC: UIViewController {
     let containerView = GFAlertContainerView()
     let titleLabel = GFTitileLabel(textAlignment: .center, fontSize: 20)
     let messageLabel = GFBodyLabel(textAlignment: .center)
-    let actionButton = GFButton(backgroudColor: .systemPink, title: "Ok")
+    let actionButton = GFButton(color: .systemPink, title: "Ok", systemImageName: "checkmark.circle")
     
     //хотим чтобы View с Алертом менял данные внутри него в зависимости от того, какие данные передает другой View
     var alertTitle: String?

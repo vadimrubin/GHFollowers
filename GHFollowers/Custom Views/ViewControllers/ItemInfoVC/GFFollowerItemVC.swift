@@ -32,7 +32,7 @@ class GFFollowerItemVC: GFItemInfoVC {
     private func configureItems() {
         itemInfoViewOne.set(itemInfoType: .followers, withCount: user.followers)
         itemInfoViewTwo.set(itemInfoType: .following, withCount: user.following)
-        actionButton.set(backgroundColor: .systemGreen, title: "Get Followers")
+        actionButton.set(color: .systemGreen, title: "Get Followers", systemImageName: "person.3")
     }
     
     //переписываем действие кнопки. Когда кнопка нажата, то GFFollowerItemVC сообщает delegatee (он объявлен в родительском классе), что кнопка нажата и можно выполнять действие didTapGetFollowers

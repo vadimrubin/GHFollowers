@@ -6,6 +6,7 @@
 //
 
 import UIKit
+import SwiftUI
 
 //cоздаем ячейку
 class FollowerCell: UICollectionViewCell {
@@ -27,15 +28,21 @@ class FollowerCell: UICollectionViewCell {
 
     //метод, нужный для того, чтобы передать данные в ячейку
     func set(follower: Follower) {
-        usernameLabel.text = follower.login
-        avatarImageView.downloadImage(fromURL: follower.avatarUrl)
-        //заменили этот код на функию выше
-//        NetworkManager.shared.downloadImage(from: follower.avatarUrl) { [weak self] image in
-//            guard let self = self else { return }
-//            DispatchQueue.main.async {
-//                self.avatarImageView.image = image
-//            }
-//        }
+        if #available(iOS 17.0, *) {
+            contentConfiguration = UIHostingConfiguration {
+                FollowerView(follower: follower)
+            }
+        } else {
+            usernameLabel.text = follower.login
+            avatarImageView.downloadImage(fromURL: follower.avatarUrl)
+            //заменили этот код на функию выше
+    //        NetworkManager.shared.downloadImage(from: follower.avatarUrl) { [weak self] image in
+    //            guard let self = self else { return }
+    //            DispatchQueue.main.async {
+    //                self.avatarImageView.image = image
+    //            }
+    //        }
+        }
     }
     
     //конфигурируем ячейку

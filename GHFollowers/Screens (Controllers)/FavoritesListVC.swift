@@ -33,25 +33,29 @@ class FavoritesListVC: GFDataLoadingVC {
     //метод, с помощью которого загружаем объекты Favorites из UserDefaults
     func getFavorites() {
         PersistanceManager.retrieveFavorites { [weak self] result in //вызываем метод retrieveFavorites у PersistanceManager
-            guard let self = self else { return } //для [weak self]
+            guard let self else { return } //для [weak self]
             //два варианта результата: success и failure
             switch result {
-            case .success(let favorites): //при success у нас есть какие-то объекты Favorites или nil
-                //проверяем на nil
-                if favorites.isEmpty {
-                    self.showEmptyStateView(with: "No favorites?\nAdd one the follower screen", in: self.view)
-                } else {
-                    self.favorites = favorites
-                    DispatchQueue.main.async {
-                        self.favoritesTableView.reloadData() //обновляем таблицу в main thread
-                        self.view.bringSubviewToFront(self.favoritesTableView) //это необходимо для того,чтобы favoritesTableView был вынесен вперед, в случае если он "затерялся" среди view
-                    }
-                }
-                
+            case .success(let favorites):
+                self.updateUI(with: favorites)
             case .failure(let error): //при failure у нас есть error
                 self.presentGFAlertOnMainThread(title: "Something went wrong", message: error.rawValue, buttonTitle: "Ok") //показываем alert
             }
         }
+    }
+    
+    func updateUI(with favorites: [Follower]) {
+        //при success у нас есть какие-то объекты Favorites или nil
+            //проверяем на nil
+            if favorites.isEmpty {
+                self.showEmptyStateView(with: "No favorites?\nAdd one the follower screen", in: self.view)
+            } else {
+                self.favorites = favorites
+                DispatchQueue.main.async {
+                    self.favoritesTableView.reloadData() //обновляем таблицу в main thread
+                    self.view.bringSubviewToFront(self.favoritesTableView) //это необходимо для того,чтобы favoritesTableView был вынесен вперед, в случае если он "затерялся" среди view
+                }
+            }
     }
     
     //конфиг tableview
@@ -91,10 +95,13 @@ extension FavoritesListVC: UITableViewDataSource, UITableViewDelegate {
         guard editingStyle == .delete else { return }
         
         PersistanceManager.updateWith(follower: favorites[indexPath.row], actionType: .remove) { [weak self] error in
-            guard let self = self else { return }
-            guard let error = error else {
+            guard let self else { return }
+            guard let error else {
                 self.favorites.remove(at: indexPath.row)
                 self.favoritesTableView.deleteRows(at: [indexPath], with: .left)
+                if self.favorites.isEmpty {
+                    self.showEmptyStateView(with: "No favorites?\nAdd one the follower screen", in: self.view)
+                }
                 return
             }
             self.presentGFAlertOnMainThread(title: "Unable to remove", message: error.rawValue, buttonTitle: "Ok")
